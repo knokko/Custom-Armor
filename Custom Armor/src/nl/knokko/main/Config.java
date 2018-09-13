@@ -534,7 +534,7 @@ public class Config {
 				int leatherBlue = ms.getInt(LEATHER_BLUE);
 				ArmorPiece piece = new ArmorPiece(entry.getKey(), type, place, leatherRed, leatherGreen, leatherBlue, armorValue, armorThoughness, attackDamage, attackSpeed, maxHealth, movementSpeed, knockbackResistance, luck, unbreakable, prot, fireProt, feather, blast, proj, resp, aqua, thorns, depth, frost, unbreaking, mending, vanish, bind);
 				addArmorPiece(piece);
-				ArmorRecipes.addCustomRecipe(recipe, piece.createItemStack());
+				ArmorRecipes.addCustomRecipe(recipe, piece.createItemStack(), entry.getKey());
 			}
 		}
 		section = getSection(UPGRADES);

@@ -1,16 +1,31 @@
 package nl.knokko.armor;
 
+import static org.bukkit.enchantments.Enchantment.BINDING_CURSE;
+import static org.bukkit.enchantments.Enchantment.DEPTH_STRIDER;
+import static org.bukkit.enchantments.Enchantment.DURABILITY;
+import static org.bukkit.enchantments.Enchantment.FROST_WALKER;
+import static org.bukkit.enchantments.Enchantment.MENDING;
+import static org.bukkit.enchantments.Enchantment.OXYGEN;
+import static org.bukkit.enchantments.Enchantment.PROTECTION_ENVIRONMENTAL;
+import static org.bukkit.enchantments.Enchantment.PROTECTION_EXPLOSIONS;
+import static org.bukkit.enchantments.Enchantment.PROTECTION_FALL;
+import static org.bukkit.enchantments.Enchantment.PROTECTION_FIRE;
+import static org.bukkit.enchantments.Enchantment.PROTECTION_PROJECTILE;
+import static org.bukkit.enchantments.Enchantment.THORNS;
+import static org.bukkit.enchantments.Enchantment.VANISHING_CURSE;
+import static org.bukkit.enchantments.Enchantment.WATER_WORKER;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
-import net.minecraft.server.v1_11_R1.NBTTagCompound;
-import net.minecraft.server.v1_11_R1.NBTTagDouble;
-import net.minecraft.server.v1_11_R1.NBTTagInt;
-import net.minecraft.server.v1_11_R1.NBTTagList;
-import net.minecraft.server.v1_11_R1.NBTTagLong;
-import net.minecraft.server.v1_11_R1.NBTTagString;
+import net.minecraft.server.v1_12_R1.NBTTagCompound;
+import net.minecraft.server.v1_12_R1.NBTTagDouble;
+import net.minecraft.server.v1_12_R1.NBTTagInt;
+import net.minecraft.server.v1_12_R1.NBTTagList;
+import net.minecraft.server.v1_12_R1.NBTTagLong;
+import net.minecraft.server.v1_12_R1.NBTTagString;
 import nl.knokko.armor.enchantment.ArmorEnchantmentCourse;
 import nl.knokko.armor.enchantment.SingleArmorEnchantment;
 import nl.knokko.armor.upgrade.ArmorUpgradeCourse;
@@ -19,13 +34,11 @@ import nl.knokko.main.CustomArmor;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
-import org.bukkit.craftbukkit.v1_11_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
-
-import static org.bukkit.enchantments.Enchantment.*;
 
 public final class ArmorPiece implements Comparable<ArmorPiece> {
 	
@@ -207,7 +220,7 @@ public final class ArmorPiece implements Comparable<ArmorPiece> {
 	}
 	
 	public static ArmorPiece fromItemStack(ItemStack stack){
-		net.minecraft.server.v1_11_R1.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
+		net.minecraft.server.v1_12_R1.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
 		NBTTagCompound compound = (nmsStack.hasTag()) ? nmsStack.getTag() : null;
 		if(compound == null)
 			return null;
@@ -267,7 +280,7 @@ public final class ArmorPiece implements Comparable<ArmorPiece> {
 		meta.setDisplayName(name);
 		meta.setUnbreakable(unbreakable);
 		stack.setItemMeta(meta);
-		net.minecraft.server.v1_11_R1.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
+		net.minecraft.server.v1_12_R1.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
 		NBTTagCompound compound = (nmsStack.hasTag()) ? nmsStack.getTag() : new NBTTagCompound();
 		NBTTagList modifiers = new NBTTagList();
 		String slot = place.getSlot();
@@ -388,70 +401,74 @@ public final class ArmorPiece implements Comparable<ArmorPiece> {
 			int unbreaking = ap.unbreaking;
 			for(Upgrade upgrade : upgrades){
 				ArmorUpgradeCourse course = CustomArmor.getInstance().getArmorConfig().upgradeFromName(upgrade.upgradeName);
-				for(int level = upgrade.level; level > 0; level--){
-					SingleArmorUpgrade au = course.getUpgrade(level);
-					armor -= au.getExtraArmor();
-					toughness -= au.getExtraToughness();
-					attackDamage -= au.getExtraAttackDamage();
-					attackSpeed -= au.getExtraAttackSpeed();
-					maxHealth -= au.getExtraHealth();
-					movementSpeed -= au.getExtraSpeed();
-					knockbackResistance -= au.getExtraKnockbackResistance();
-					luck -= au.getExtraLuck();
-					protection -= au.getExtraProtection();
-					fireProtection -= au.getExtraFireProtection();
-					featherFalling -= au.getExtraFeatherFalling();
-					blastProtection -= au.getExtraBlastProtection();
-					projectileProtection -= au.getExtraProjectileProtection();
-					respiration -= au.getExtraRespiration();
-					thorns -= au.getExtraThorns();
-					depthStrider -= au.getExtraDepthsStrider();
-					frostWalker -= au.getExtraFrostWalker();
-					unbreaking -= au.getExtraUnbreaking();
-					if(unbreakable && au.addUnbreakable())
-						unbreakable = false;
-					if(aqua && au.addAquaAffinity())
-						aqua = false;
-					if(mending && au.addMending())
-						mending = false;
-					if(vanish && au.addVanishCurse())
-						vanish = false;
-					if(bind && au.addBindingCurse())
-						bind = false;
+				if(course != null){
+					for(int level = upgrade.level; level > 0; level--){
+						SingleArmorUpgrade au = course.getUpgrade(level);
+						armor -= au.getExtraArmor();
+						toughness -= au.getExtraToughness();
+						attackDamage -= au.getExtraAttackDamage();
+						attackSpeed -= au.getExtraAttackSpeed();
+						maxHealth -= au.getExtraHealth();
+						movementSpeed -= au.getExtraSpeed();
+						knockbackResistance -= au.getExtraKnockbackResistance();
+						luck -= au.getExtraLuck();
+						protection -= au.getExtraProtection();
+						fireProtection -= au.getExtraFireProtection();
+						featherFalling -= au.getExtraFeatherFalling();
+						blastProtection -= au.getExtraBlastProtection();
+						projectileProtection -= au.getExtraProjectileProtection();
+						respiration -= au.getExtraRespiration();
+						thorns -= au.getExtraThorns();
+						depthStrider -= au.getExtraDepthsStrider();
+						frostWalker -= au.getExtraFrostWalker();
+						unbreaking -= au.getExtraUnbreaking();
+						if(unbreakable && au.addUnbreakable())
+							unbreakable = false;
+						if(aqua && au.addAquaAffinity())
+							aqua = false;
+						if(mending && au.addMending())
+							mending = false;
+						if(vanish && au.addVanishCurse())
+							vanish = false;
+						if(bind && au.addBindingCurse())
+							bind = false;
+					}
 				}
 			}
 			for(Enchant ench : enchants){
 				ArmorEnchantmentCourse aec = CustomArmor.getInstance().getArmorConfig().enchantmentFromName(ench.enchantmentName);
-				for(int level = ench.level; level > 0; level--){
-					SingleArmorEnchantment au = aec.getEnchantment(level);
-					armor -= au.getExtraArmor();
-					toughness -= au.getExtraToughness();
-					attackDamage -= au.getExtraAttackDamage();
-					attackSpeed -= au.getExtraAttackSpeed();
-					maxHealth -= au.getExtraHealth();
-					movementSpeed -= au.getExtraSpeed();
-					knockbackResistance -= au.getExtraKnockbackResistance();
-					luck -= au.getExtraLuck();
-					protection -= au.getExtraProtection();
-					fireProtection -= au.getExtraFireProtection();
-					featherFalling -= au.getExtraFeatherFalling();
-					blastProtection -= au.getExtraBlastProtection();
-					projectileProtection -= au.getExtraProjectileProtection();
-					respiration -= au.getExtraRespiration();
-					thorns -= au.getExtraThorns();
-					depthStrider -= au.getExtraDepthsStrider();
-					frostWalker -= au.getExtraFrostWalker();
-					unbreaking -= au.getExtraUnbreaking();
-					if(unbreakable && au.addUnbreakable())
-						unbreakable = false;
-					if(aqua && au.addAquaAffinity())
-						aqua = false;
-					if(mending && au.addMending())
-						mending = false;
-					if(vanish && au.addVanishCurse())
-						vanish = false;
-					if(bind && au.addBindingCurse())
-						bind = false;
+				if(aec != null){
+					for(int level = ench.level; level > 0; level--){
+						SingleArmorEnchantment au = aec.getEnchantment(level);
+						armor -= au.getExtraArmor();
+						toughness -= au.getExtraToughness();
+						attackDamage -= au.getExtraAttackDamage();
+						attackSpeed -= au.getExtraAttackSpeed();
+						maxHealth -= au.getExtraHealth();
+						movementSpeed -= au.getExtraSpeed();
+						knockbackResistance -= au.getExtraKnockbackResistance();
+						luck -= au.getExtraLuck();
+						protection -= au.getExtraProtection();
+						fireProtection -= au.getExtraFireProtection();
+						featherFalling -= au.getExtraFeatherFalling();
+						blastProtection -= au.getExtraBlastProtection();
+						projectileProtection -= au.getExtraProjectileProtection();
+						respiration -= au.getExtraRespiration();
+						thorns -= au.getExtraThorns();
+						depthStrider -= au.getExtraDepthsStrider();
+						frostWalker -= au.getExtraFrostWalker();
+						unbreaking -= au.getExtraUnbreaking();
+						if(unbreakable && au.addUnbreakable())
+							unbreakable = false;
+						if(aqua && au.addAquaAffinity())
+							aqua = false;
+						if(mending && au.addMending())
+							mending = false;
+						if(vanish && au.addVanishCurse())
+							vanish = false;
+						if(bind && au.addBindingCurse())
+							bind = false;
+					}
 				}
 			}
 			return new ArmorPiece(ap.name, ap.type, ap.place, ap.leatherRed, ap.leatherGreen, ap.leatherBlue, armor, toughness, attackDamage, attackSpeed, maxHealth, movementSpeed, knockbackResistance, luck, unbreakable, protection, fireProtection, featherFalling, blastProtection, projectileProtection, respiration, aqua ? 1 : 0, thorns, depthStrider, frostWalker, unbreaking, mending ? 1 : 0, vanish ? 1 : 0, bind ? 1 : 0);

@@ -1,6 +1,6 @@
 name: CustomArmor
 main: nl.knokko.main.CustomArmor
-version: 1.1
+version: 2.2
 commands:
   customarmor:
     description: Use this command to enable, reload or disable the recipes without restarting the server.

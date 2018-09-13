@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import nl.knokko.main.CustomArmor;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
@@ -33,8 +36,8 @@ public class ArmorRecipes {
 		restoreVanillaRecipes();
 	}
 	
-	public static void addCustomRecipe(Material[] recipe, ItemStack output){
-		ShapedRecipe sr = new ShapedRecipe(output);
+	public static void addCustomRecipe(Material[] recipe, ItemStack output, String id){
+		ShapedRecipe sr = new ShapedRecipe(new NamespacedKey(CustomArmor.getInstance(), id.replace(' ', '_')), output);
 		sr.shape("abc", "def", "ghi");
 		if(recipe[0] != null)
 			sr.setIngredient('a', recipe[0]);
@@ -60,22 +63,30 @@ public class ArmorRecipes {
 	
 	public static void clearVanillaRecipes(){
 		Iterator<Recipe> iterator = Bukkit.recipeIterator();
+		List<Recipe> newRecipes = new ArrayList<Recipe>();
 		while(iterator.hasNext()){
 			Recipe recipe = iterator.next();
-			if(shouldBeRemoved(recipe.getResult().getType())){
+			if(shouldBeRemoved(recipe.getResult().getType()))
 				disabledRecipes.add(recipe);
-				iterator.remove();
-			}
+			else
+				newRecipes.add(recipe);
 		}
+		Bukkit.clearRecipes();
+		for(Recipe recipe : newRecipes)
+			Bukkit.addRecipe(recipe);
 	}
 	
 	public static void clearCustomRecipes(){
 		Iterator<Recipe> iterator = Bukkit.recipeIterator();
+		List<Recipe> newRecipes = new ArrayList<Recipe>();
 		while(iterator.hasNext()){
 			Recipe recipe = iterator.next();
-			if(containsCustom(recipe))
-				iterator.remove();
+			if(!containsCustom(recipe))
+				newRecipes.add(recipe);
 		}
+		Bukkit.clearRecipes();
+		for(Recipe recipe : newRecipes)
+			Bukkit.addRecipe(recipe);
 		customRecipes.clear();
 	}
 	
@@ -94,19 +105,8 @@ public class ArmorRecipes {
 	
 	private static boolean containsCustom(Recipe recipe){
 		for(Recipe cr : customRecipes){
-			if(cr.getResult().equals(recipe.getResult())){
-				if(recipe instanceof ShapedRecipe){
-					ShapedRecipe scr = (ShapedRecipe) cr;
-					ShapedRecipe s = (ShapedRecipe) recipe;
-					if(s.getIngredientMap().equals(scr.getIngredientMap())){
-						if(s.getShape().length == 3){
-							if(s.getShape()[0].equals(scr.getShape()[0]) && s.getShape()[1].equals(scr.getShape()[1]) && s.getShape()[2].equals(scr.getShape()[2])){
-								return true;
-							}
-						}
-					}
-				}
-			}
+			if(cr.getResult().equals(recipe.getResult()))
+				return true;
 		}
 		return false;
 	}
