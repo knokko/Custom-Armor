@@ -73,7 +73,7 @@ public class CommandCustomArmor implements CommandExecutor, Listener {
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onInventoryClick(final InventoryClickEvent event){
 		Inventory inv = event.getInventory();
-		if(inv != null && inv.getName().equals(NAME_EXAMPLE)){
+		if(inv != null && event.getView().getTitle().equals(NAME_EXAMPLE)){
 			event.setCancelled(true);
 			if(event.getCurrentItem() != null){
 				Material type = event.getCurrentItem().getType();

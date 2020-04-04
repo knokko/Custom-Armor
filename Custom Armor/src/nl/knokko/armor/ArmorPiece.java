@@ -20,12 +20,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
-import net.minecraft.server.v1_12_R1.NBTTagCompound;
-import net.minecraft.server.v1_12_R1.NBTTagDouble;
-import net.minecraft.server.v1_12_R1.NBTTagInt;
-import net.minecraft.server.v1_12_R1.NBTTagList;
-import net.minecraft.server.v1_12_R1.NBTTagLong;
-import net.minecraft.server.v1_12_R1.NBTTagString;
+import net.minecraft.server.v1_15_R1.NBTTagCompound;
+import net.minecraft.server.v1_15_R1.NBTTagDouble;
+import net.minecraft.server.v1_15_R1.NBTTagInt;
+import net.minecraft.server.v1_15_R1.NBTTagList;
+import net.minecraft.server.v1_15_R1.NBTTagLong;
+import net.minecraft.server.v1_15_R1.NBTTagString;
 import nl.knokko.armor.enchantment.ArmorEnchantmentCourse;
 import nl.knokko.armor.enchantment.SingleArmorEnchantment;
 import nl.knokko.armor.upgrade.ArmorUpgradeCourse;
@@ -34,7 +34,7 @@ import nl.knokko.main.CustomArmor;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
-import org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_15_R1.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -220,7 +220,7 @@ public final class ArmorPiece implements Comparable<ArmorPiece> {
 	}
 	
 	public static ArmorPiece fromItemStack(ItemStack stack){
-		net.minecraft.server.v1_12_R1.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
+		net.minecraft.server.v1_15_R1.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
 		NBTTagCompound compound = (nmsStack.hasTag()) ? nmsStack.getTag() : null;
 		if(compound == null)
 			return null;
@@ -280,7 +280,7 @@ public final class ArmorPiece implements Comparable<ArmorPiece> {
 		meta.setDisplayName(name);
 		meta.setUnbreakable(unbreakable);
 		stack.setItemMeta(meta);
-		net.minecraft.server.v1_12_R1.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
+		net.minecraft.server.v1_15_R1.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
 		NBTTagCompound compound = (nmsStack.hasTag()) ? nmsStack.getTag() : new NBTTagCompound();
 		NBTTagList modifiers = new NBTTagList();
 		String slot = place.getSlot();
@@ -320,7 +320,7 @@ public final class ArmorPiece implements Comparable<ArmorPiece> {
 	
 	private static double getAttributeValue(NBTTagList modifiers, String name){
 		for(int i = 0; i < modifiers.size(); i++){
-			NBTTagCompound nbt = modifiers.get(i);
+			NBTTagCompound nbt = (NBTTagCompound) modifiers.get(i);
 			if(nbt.getString("AttributeName").equals(name))
 				return nbt.getDouble("Amount");
 		}
@@ -331,13 +331,13 @@ public final class ArmorPiece implements Comparable<ArmorPiece> {
 		if(value == 0)
 			return;
 		NBTTagCompound damage = new NBTTagCompound();
-		damage.set("AttributeName", new NBTTagString(name));
-		damage.set("Name", new NBTTagString(name));
-		damage.set("Amount", new NBTTagDouble(value));
-		damage.set("Operation", new NBTTagInt(0));
-		damage.set("UUIDLeast", new NBTTagLong(System.currentTimeMillis()));
-		damage.set("UUIDMost", new NBTTagLong(System.nanoTime()));
-		damage.set("Slot", new NBTTagString(slot));
+		damage.set("AttributeName", NBTTagString.a(name));
+		damage.set("Name", NBTTagString.a(name));
+		damage.set("Amount", NBTTagDouble.a(value));
+		damage.set("Operation", NBTTagInt.a(0));
+		damage.set("UUIDLeast", NBTTagLong.a(System.currentTimeMillis()));
+		damage.set("UUIDMost", NBTTagLong.a(System.nanoTime()));
+		damage.set("Slot", NBTTagString.a(slot));
 		modifiers.add(damage);
 	}
 	
@@ -497,10 +497,10 @@ public final class ArmorPiece implements Comparable<ArmorPiece> {
 		
 		private void load(NBTTagCompound itemTag){
 			NBTTagCompound nbt = itemTag.getCompound("custom armor upgrades");
-			for(String key : nbt.c())
+			for(String key : nbt.getKeys())
 				upgrades.add(new Upgrade(key, nbt.getInt(key)));
 			NBTTagCompound cenchants = itemTag.getCompound("custom armor enchantments");
-			for(String key : cenchants.c())
+			for(String key : cenchants.getKeys())
 				enchants.add(new Enchant(key, cenchants.getInt(key)));
 		}
 		

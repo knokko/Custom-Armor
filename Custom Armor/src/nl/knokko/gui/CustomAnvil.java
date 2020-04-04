@@ -51,11 +51,10 @@ public class CustomAnvil implements Listener {
 	
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onInventoryClick(InventoryClickEvent event){
-		Inventory inv = event.getInventory();
 		ItemStack stack = event.getCurrentItem();
-		if(event.getInventory().getName().equals(TITLE_CUSTOM_ANVIL))
+		if(event.getView().getTitle().equals(TITLE_CUSTOM_ANVIL))
 			event.setCancelled(true);
-		if(stack != null && inv.getName().equals(TITLE_CUSTOM_ANVIL) && event.getWhoClicked() instanceof Player){
+		if(stack != null && event.getView().getTitle().equals(TITLE_CUSTOM_ANVIL) && event.getWhoClicked() instanceof Player){
 			event.setCancelled(true);
 			Player player = (Player) event.getWhoClicked();
 			Material item = stack.getType();

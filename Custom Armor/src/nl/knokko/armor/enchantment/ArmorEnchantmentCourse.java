@@ -51,7 +51,7 @@ public class ArmorEnchantmentCourse {
 	
 	public boolean canApplyTo(ArmorPiece armor){
 		for(String name : allowedArmor)
-			if(name.equals(armor))
+			if(name.equals(armor.getName()))
 				return true;
 		return false;
 	}

@@ -34,7 +34,7 @@ public class CustomEnchanting implements Listener {
 	
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onPlayerInteract(org.bukkit.event.player.PlayerInteractEvent event){
-		if(event.getAction() == Action.RIGHT_CLICK_BLOCK && event.getClickedBlock().getType() == Material.ENCHANTMENT_TABLE){
+		if(event.getAction() == Action.RIGHT_CLICK_BLOCK && event.getClickedBlock().getType() == Material.ENCHANTING_TABLE){
 			if(plugin.getArmorConfig().disableVanillaEnchanting()){
 				event.setCancelled(true);
 				if(plugin.getArmorConfig().useCustomEnchanting()){
@@ -51,11 +51,10 @@ public class CustomEnchanting implements Listener {
 	
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onInventoryClick(InventoryClickEvent event){
-		Inventory inv = event.getInventory();
 		ItemStack stack = event.getCurrentItem();
-		if(event.getInventory().getName().equals(TITLE_CUSTOM_ENCHANTMENT_TABLE))
+		if(event.getView().getTitle().equals(TITLE_CUSTOM_ENCHANTMENT_TABLE))
 			event.setCancelled(true);
-		if(stack != null && inv.getName().equals(TITLE_CUSTOM_ENCHANTMENT_TABLE) && event.getWhoClicked() instanceof Player){
+		if(stack != null && event.getView().getTitle().equals(TITLE_CUSTOM_ENCHANTMENT_TABLE) && event.getWhoClicked() instanceof Player){
 			event.setCancelled(true);
 			Player player = (Player) event.getWhoClicked();
 			Material item = stack.getType();

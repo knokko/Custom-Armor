@@ -469,6 +469,8 @@ public class Config {
 		return material != null ? material.name().toLowerCase() : "empty";
 	}
 	
+	@SuppressWarnings("deprecation")
+	// Necessary to support the old config.yml format
 	private String e(Enchantment enchantment){
 		return enchantment.getName().toLowerCase();
 	}
