@@ -20,12 +20,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
-import net.minecraft.server.v1_15_R1.NBTTagCompound;
-import net.minecraft.server.v1_15_R1.NBTTagDouble;
-import net.minecraft.server.v1_15_R1.NBTTagInt;
-import net.minecraft.server.v1_15_R1.NBTTagList;
-import net.minecraft.server.v1_15_R1.NBTTagLong;
-import net.minecraft.server.v1_15_R1.NBTTagString;
+import net.minecraft.server.v1_16_R3.NBTTagCompound;
+import net.minecraft.server.v1_16_R3.NBTTagDouble;
+import net.minecraft.server.v1_16_R3.NBTTagInt;
+import net.minecraft.server.v1_16_R3.NBTTagList;
+import net.minecraft.server.v1_16_R3.NBTTagLong;
+import net.minecraft.server.v1_16_R3.NBTTagString;
 import nl.knokko.armor.enchantment.ArmorEnchantmentCourse;
 import nl.knokko.armor.enchantment.SingleArmorEnchantment;
 import nl.knokko.armor.upgrade.ArmorUpgradeCourse;
@@ -34,7 +34,7 @@ import nl.knokko.main.CustomArmor;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
-import org.bukkit.craftbukkit.v1_15_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -220,7 +220,7 @@ public final class ArmorPiece implements Comparable<ArmorPiece> {
 	}
 	
 	public static ArmorPiece fromItemStack(ItemStack stack){
-		net.minecraft.server.v1_15_R1.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
+		net.minecraft.server.v1_16_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
 		NBTTagCompound compound = (nmsStack.hasTag()) ? nmsStack.getTag() : null;
 		if(compound == null)
 			return null;
@@ -280,7 +280,7 @@ public final class ArmorPiece implements Comparable<ArmorPiece> {
 		meta.setDisplayName(name);
 		meta.setUnbreakable(unbreakable);
 		stack.setItemMeta(meta);
-		net.minecraft.server.v1_15_R1.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
+		net.minecraft.server.v1_16_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
 		NBTTagCompound compound = (nmsStack.hasTag()) ? nmsStack.getTag() : new NBTTagCompound();
 		NBTTagList modifiers = new NBTTagList();
 		String slot = place.getSlot();
