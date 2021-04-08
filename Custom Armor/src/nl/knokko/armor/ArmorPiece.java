@@ -17,15 +17,12 @@ import static org.bukkit.enchantments.Enchantment.WATER_WORKER;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
 
 import net.minecraft.server.v1_16_R3.NBTTagCompound;
-import net.minecraft.server.v1_16_R3.NBTTagDouble;
-import net.minecraft.server.v1_16_R3.NBTTagInt;
-import net.minecraft.server.v1_16_R3.NBTTagList;
-import net.minecraft.server.v1_16_R3.NBTTagLong;
-import net.minecraft.server.v1_16_R3.NBTTagString;
 import nl.knokko.armor.enchantment.ArmorEnchantmentCourse;
 import nl.knokko.armor.enchantment.SingleArmorEnchantment;
 import nl.knokko.armor.upgrade.ArmorUpgradeCourse;
@@ -34,6 +31,9 @@ import nl.knokko.main.CustomArmor;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeModifier;
+import org.bukkit.attribute.AttributeModifier.Operation;
 import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
@@ -151,7 +151,6 @@ public final class ArmorPiece implements Comparable<ArmorPiece> {
 					Field[] fields = ArmorPiece.class.getDeclaredFields();
 					for(Field field : fields){
 						if(!field.getName().equals("upgrades") && !field.getName().equals("leatherRed") && !field.getName().equals("leatherGreen") && !field.getName().equals("leatherBlue") && !field.get(this).equals(field.get(ap))){
-							System.out.println("field " + field.getName() + " is not equal: (" + field.get(this) + "," + field.get(ap));
 							return false;
 						}
 					}
@@ -219,6 +218,21 @@ public final class ArmorPiece implements Comparable<ArmorPiece> {
 		return upgrades.getEnchantmentLevel(course.getName());
 	}
 	
+	private static double getAttributeValue(ItemMeta meta, Attribute attribute) {
+		double result = 0.0;
+		
+		Collection<AttributeModifier> modifiers = meta.getAttributeModifiers(attribute);
+		if (modifiers != null) {
+			for (AttributeModifier modifier : modifiers) {
+				
+				// This system is very primitive, but should be sufficient for this plugin
+				result += modifier.getAmount();
+			}
+		}
+		
+		return result;
+	}
+	
 	public static ArmorPiece fromItemStack(ItemStack stack){
 		net.minecraft.server.v1_16_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
 		NBTTagCompound compound = (nmsStack.hasTag()) ? nmsStack.getTag() : null;
@@ -236,7 +250,6 @@ public final class ArmorPiece implements Comparable<ArmorPiece> {
 		}
 		String name = meta.getDisplayName();
 		boolean unbreakable = meta.isUnbreakable();
-		NBTTagList modifiers = compound.getList("AttributeModifiers", 10);
 		UpgradeAdmin upgrades = new UpgradeAdmin();
 		upgrades.load(compound);
 		double armor = 0;
@@ -247,16 +260,17 @@ public final class ArmorPiece implements Comparable<ArmorPiece> {
 		double movementSpeed = 0;
 		double knockbackResistance = 0;
 		double luck = 0;
-		if(modifiers != null){
-			armor = getAttributeValue(modifiers, "generic.armor");
-			toughness = getAttributeValue(modifiers, "generic.armorToughness");
-			attackDamage = getAttributeValue(modifiers, "generic.attackDamage");
-			attackSpeed = getAttributeValue(modifiers, "generic.attackSpeed");
-			maxHealth = getAttributeValue(modifiers, "generic.maxHealth");
-			movementSpeed = getAttributeValue(modifiers, "generic.movementSpeed");
-			knockbackResistance = getAttributeValue(modifiers, "generic.knockbackResistance");
-			luck = getAttributeValue(modifiers, "generic.luck");
+		if (meta != null && meta.hasAttributeModifiers()) {
+			armor = getAttributeValue(meta, Attribute.GENERIC_ARMOR);
+			toughness = getAttributeValue(meta, Attribute.GENERIC_ARMOR_TOUGHNESS);
+			attackDamage = getAttributeValue(meta, Attribute.GENERIC_ATTACK_DAMAGE);
+			attackSpeed = getAttributeValue(meta, Attribute.GENERIC_ATTACK_SPEED);
+			maxHealth = getAttributeValue(meta, Attribute.GENERIC_MAX_HEALTH);
+			movementSpeed = getAttributeValue(meta, Attribute.GENERIC_MOVEMENT_SPEED);
+			knockbackResistance = getAttributeValue(meta, Attribute.GENERIC_KNOCKBACK_RESISTANCE);
+			luck = getAttributeValue(meta, Attribute.GENERIC_LUCK);
 		}
+		
 		ArmorType type = ArmorType.fromMaterial(stack.getType());
 		ArmorPlace place = ArmorPlace.fromMaterial(stack.getType());
 		if(type == null || place == null)
@@ -279,20 +293,20 @@ public final class ArmorPiece implements Comparable<ArmorPiece> {
 			((LeatherArmorMeta) meta).setColor(Color.fromRGB(leatherRed, leatherGreen, leatherBlue));
 		meta.setDisplayName(name);
 		meta.setUnbreakable(unbreakable);
+		
+		addAttribute(meta, place, Attribute.GENERIC_ARMOR, armor);
+		addAttribute(meta, place, Attribute.GENERIC_ARMOR_TOUGHNESS, toughness);
+		addAttribute(meta, place, Attribute.GENERIC_ATTACK_DAMAGE, attackDamage);
+		addAttribute(meta, place, Attribute.GENERIC_ATTACK_SPEED, attackSpeed);
+		addAttribute(meta, place, Attribute.GENERIC_MAX_HEALTH, maxHealth);
+		addAttribute(meta, place, Attribute.GENERIC_MOVEMENT_SPEED, movementSpeed);
+		addAttribute(meta, place, Attribute.GENERIC_KNOCKBACK_RESISTANCE, knockbackResistance);
+		addAttribute(meta, place, Attribute.GENERIC_LUCK, luck);
 		stack.setItemMeta(meta);
+		
 		net.minecraft.server.v1_16_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
 		NBTTagCompound compound = (nmsStack.hasTag()) ? nmsStack.getTag() : new NBTTagCompound();
-		NBTTagList modifiers = new NBTTagList();
-		String slot = place.getSlot();
-		addAttribute(modifiers, "generic.armor", slot, armor);
-		addAttribute(modifiers, "generic.armorToughness", slot, toughness);
-		addAttribute(modifiers, "generic.attackDamage", slot, attackDamage);
-		addAttribute(modifiers, "generic.attackSpeed", slot, attackSpeed);
-		addAttribute(modifiers, "generic.maxHealth", slot, maxHealth);
-		addAttribute(modifiers, "generic.movementSpeed", slot, movementSpeed);
-		addAttribute(modifiers, "generic.knockbackResistance", slot, knockbackResistance);
-		addAttribute(modifiers, "generic.luck", slot, luck);
-		compound.set("AttributeModifiers", modifiers);
+		
 		upgrades.save(compound);
 		nmsStack.setTag(compound);
 		stack = CraftItemStack.asBukkitCopy(nmsStack);
@@ -318,27 +332,15 @@ public final class ArmorPiece implements Comparable<ArmorPiece> {
 			stack.addUnsafeEnchantment(enchantment, level);
 	}
 	
-	private static double getAttributeValue(NBTTagList modifiers, String name){
-		for(int i = 0; i < modifiers.size(); i++){
-			NBTTagCompound nbt = (NBTTagCompound) modifiers.get(i);
-			if(nbt.getString("AttributeName").equals(name))
-				return nbt.getDouble("Amount");
+	private static void addAttribute(
+			ItemMeta meta, ArmorPlace place, Attribute attribute, double value
+	) {
+		if (value != 0.0) {
+			UUID id = new UUID(System.currentTimeMillis(), System.nanoTime());
+			meta.addAttributeModifier(attribute, new AttributeModifier(
+					id, attribute.name(), value, Operation.ADD_NUMBER, place.getSlot()
+			));
 		}
-		return 0;
-	}
-	
-	private static void addAttribute(NBTTagList modifiers, String name, String slot, double value){
-		if(value == 0)
-			return;
-		NBTTagCompound damage = new NBTTagCompound();
-		damage.set("AttributeName", NBTTagString.a(name));
-		damage.set("Name", NBTTagString.a(name));
-		damage.set("Amount", NBTTagDouble.a(value));
-		damage.set("Operation", NBTTagInt.a(0));
-		damage.set("UUIDLeast", NBTTagLong.a(System.currentTimeMillis()));
-		damage.set("UUIDMost", NBTTagLong.a(System.nanoTime()));
-		damage.set("Slot", NBTTagString.a(slot));
-		modifiers.add(damage);
 	}
 	
 	private static class Upgrade {

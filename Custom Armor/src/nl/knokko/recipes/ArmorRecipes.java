@@ -66,10 +66,11 @@ public class ArmorRecipes {
 		List<Recipe> newRecipes = new ArrayList<Recipe>();
 		while(iterator.hasNext()){
 			Recipe recipe = iterator.next();
-			if(shouldBeRemoved(recipe.getResult().getType()))
+			if(shouldBeRemoved(recipe.getResult().getType())) {
 				disabledRecipes.add(recipe);
-			else
+			} else {
 				newRecipes.add(recipe);
+			}
 		}
 		Bukkit.clearRecipes();
 		for(Recipe recipe : newRecipes)

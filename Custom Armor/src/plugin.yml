@@ -1,6 +1,6 @@
 name: CustomArmor
 main: nl.knokko.main.CustomArmor
-version: 2.4
+version: 2.5
 api-version: 1.16
 commands:
   customarmor:

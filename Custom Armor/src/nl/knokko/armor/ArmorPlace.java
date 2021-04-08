@@ -1,13 +1,14 @@
 package nl.knokko.armor;
 
 import org.bukkit.Material;
+import org.bukkit.inventory.EquipmentSlot;
 
 public enum ArmorPlace {
 	
-	HELMET("head"),
-	CHESTPLATE("chest"),
-	LEGGINGS("legs"),
-	BOOTS("feet");
+	HELMET(EquipmentSlot.HEAD),
+	CHESTPLATE(EquipmentSlot.CHEST),
+	LEGGINGS(EquipmentSlot.LEGS),
+	BOOTS(EquipmentSlot.FEET);
 	
 	public static ArmorPlace fromString(String string){
 		return valueOf(string.toUpperCase());
@@ -39,9 +40,9 @@ public enum ArmorPlace {
 		}
 	}
 	
-	private final String slot;
+	private final EquipmentSlot slot;
 	
-	ArmorPlace(String slot){
+	ArmorPlace(EquipmentSlot slot){
 		this.slot = slot;
 	}
 	
@@ -50,7 +51,7 @@ public enum ArmorPlace {
 		return name().toLowerCase();
 	}
 	
-	public String getSlot(){
+	public EquipmentSlot getSlot(){
 		return slot;
 	}
 }
